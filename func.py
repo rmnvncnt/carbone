@@ -55,7 +55,7 @@ def get_db(path):
     df = pd.read_csv(path, sep=';', encoding='latin-1')
     # unicode to ascii
     df.columns = [unidecode(x) for x in df.columns]
-    df = df.applymap(lambda x: unidecode(x) if type(x) == unicode else x)
+    df = df.applymap(lambda x: unidecode(x) if isinstance(x, str) else x)
     # clean archived entries
     df = df[df["Statut de l'element"] == "Valide generique"]
     # get emission factors only
