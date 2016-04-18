@@ -4,7 +4,7 @@ from geopy.geocoders import Nominatim
 from geopy.distance import vincenty
 from unidecode import unidecode
 
-import requests, json
+import requests, json, re
 import pandas as pd
 
 def get_product_infos(barcode):
@@ -31,6 +31,10 @@ def get_distance_infos(product, uloc='Paris'):
     else:
         places = product['countries']
 
+    # str to list
+    if isinstance(places, str):
+        places = [places]
+
     # get geolocation
     geolocator = Nominatim()
     locations = [geolocator.geocode(p) for p in places if p]
@@ -45,7 +49,7 @@ def get_distance_infos(product, uloc='Paris'):
 
     # return shortest distance
     distance = min(distances)
-    return distance
+    return distance, places
 
 def get_db(path):
     ''' read carbon emission factor data base
@@ -67,6 +71,10 @@ def get_emission(carbone_bd, product):
 
 def get_ingredients_list(product):
     ''' read the ingredients of the product only when proportion is given from OFF '''
+    # get the weight of the product and unite
+    total_weight = int(re.findall(r'\d+', product['quantity'])[0])
+    unite = re.findall(r'[a-zA-Z]', product['quantity'])[0]
+    # get ingredient_list
     ingredient_list = product['ingredients_text']
     #clean sub composition
     ingredient_list_clean = re.sub('\[.*?\]','', ingredient_list)
