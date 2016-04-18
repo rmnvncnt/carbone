@@ -64,3 +64,12 @@ def get_db(path):
 
 def get_emission(carbone_bd, product):
     pass
+
+def get_ingredients_list(product):
+    ''' read the ingredients of the product only when proportion is given from OFF '''
+    ingredient_list = product['ingredients_text']
+    #clean sub composition
+    ingredient_list_clean = re.sub('\[.*?\]','', ingredient_list)
+    #get ingredients with proportion only
+    return [ingredient for ingredient in ingredient_list_clean.split(', ') if any(j.isdigit() for j in ingredient)]
+    #match ingredient_name and ingredient_percent
